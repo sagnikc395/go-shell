@@ -20,8 +20,13 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("%s", cmd[:len(cmd)-1]+": command not found")
-		fmt.Println()
+		actualCmd := cmd[:len(cmd)-1]
+		if string(actualCmd[0:4]) == "exit" {
+			os.Exit(0)
+		} else {
+			fmt.Printf("%s", cmd[:len(cmd)-1]+": command not found")
+			fmt.Println()
+		}
 	}
 
 }
