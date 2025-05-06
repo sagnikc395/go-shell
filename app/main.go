@@ -11,6 +11,11 @@ import (
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
 var _ = fmt.Fprint
 
+var validTypes = map[string]string{
+	"exit": "exit",
+	"echo": "echo",
+}
+
 func main() {
 	// Uncomment this block to pass the first stage
 
@@ -29,6 +34,17 @@ func main() {
 		case "echo":
 			fmt.Printf("%s\n", strings.Join(cmds[1:], " "))
 			continue
+		case "type":
+			key := cmds[1]
+			val, ok := validTypes[key]
+			if ok {
+				fmt.Printf("%s is a shell builtin\n", val)
+				continue
+			} else {
+				fmt.Printf("%s", strings.Join(cmds[1:], " ")+": not found")
+				fmt.Println()
+				continue
+			}
 		}
 		fmt.Printf("%s", commandstr[:len(commandstr)-1]+": command not found")
 		fmt.Println()
