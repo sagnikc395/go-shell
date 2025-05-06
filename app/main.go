@@ -14,6 +14,7 @@ var _ = fmt.Fprint
 var validTypes = map[string]string{
 	"exit": "exit",
 	"echo": "echo",
+	"type": "type",
 }
 
 func main() {
