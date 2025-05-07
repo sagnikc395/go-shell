@@ -43,7 +43,7 @@ func ExitCommand(argv []string) {
 }
 
 func EchoCommand(argv []string) {
-	output := strings.Join(argv[:], " ")
+	output := strings.Join(argv[1:], " ")
 	fmt.Fprintf(os.Stdout, "%s\n", output)
 }
 
