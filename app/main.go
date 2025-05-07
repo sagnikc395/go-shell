@@ -17,6 +17,18 @@ var validTypes = map[string]string{
 	"type": "type",
 }
 
+func findBinInPath(bin string) (string, bool) {
+	//checks in the binary is in path or not
+	paths := os.Getenv("PATH")
+	for _, path := range strings.Split(paths, ":") {
+		file := path + "/" + bin
+		if _, err := os.Stat(file); err == nil {
+			return file, true
+		}
+	}
+	return "", false
+}
+
 func main() {
 	// Uncomment this block to pass the first stage
 
@@ -38,6 +50,10 @@ func main() {
 		case "type":
 			key := cmds[1]
 			val, ok := validTypes[key]
+			if file, exists := findBinInPath(val); exists {
+				fmt.Printf("%s is %s\n", val, file)
+				continue
+			}
 			if ok {
 				fmt.Printf("%s is a shell builtin\n", val)
 				continue
@@ -49,7 +65,5 @@ func main() {
 		}
 		fmt.Printf("%s", commandstr[:len(commandstr)-1]+": command not found")
 		fmt.Println()
-
 	}
-
 }
