@@ -18,6 +18,11 @@ func main() {
 			panic(err)
 		}
 
+		if cmd[:len(cmd)-1] == "exit" {
+			runShell = false
+			break
+		}
+
 		fmt.Println(cmd[:len(cmd)-1] + ": command not found")
 
 	}
