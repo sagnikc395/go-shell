@@ -42,7 +42,7 @@ func main() {
 			}
 
 		default:
-			fmt.Printf(cmd + ": not found")
+			fmt.Printf(cmd + ": command not found\n")
 		}
 
 	}
