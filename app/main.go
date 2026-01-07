@@ -23,18 +23,27 @@ func main() {
 		cmd = command[0]
 		args := command[1:]
 
-		if cmd == "exit" {
+		switch cmd {
+		case "exit":
 			runShell = false
 			break
-		}
-
-		if cmd == "echo" {
+		case "echo":
 			for _, v := range args {
 				fmt.Printf("%v ", v)
 			}
 			fmt.Printf("\n")
-		} else {
-			fmt.Println(cmd + ": command not found")
+			break
+		case "type":
+			type_check := args[0]
+			if type_check == "echo" || type_check == "exit" || type_check == "type" {
+				fmt.Printf("%v is a shell builtin\n", type_check)
+			} else {
+				fmt.Printf("%v: not found\n", type_check)
+			}
+
+		default:
+			fmt.Printf(cmd + ": not found")
 		}
+
 	}
 }
