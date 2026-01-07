@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
@@ -18,12 +19,22 @@ func main() {
 			panic(err)
 		}
 
-		if cmd[:len(cmd)-1] == "exit" {
+		command := strings.Fields(cmd)
+		cmd = command[0]
+		args := command[1:]
+
+		if cmd == "exit" {
 			runShell = false
 			break
 		}
 
-		fmt.Println(cmd[:len(cmd)-1] + ": command not found")
-
+		if cmd == "echo" {
+			for _, v := range args {
+				fmt.Printf("%v ", v)
+			}
+			fmt.Printf("\n")
+		} else {
+			fmt.Println(cmd + ": command not found")
+		}
 	}
 }
