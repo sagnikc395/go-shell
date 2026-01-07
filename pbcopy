@@ -4,12 +4,23 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
 var _ = fmt.Print
+
+func getExecutablePath() string {
+	result := ""
+	ex,err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	dir := path.Dir(ex)
+	result += dir
+	return result 
+}
+
 
 func main() {
 	runShell := true
@@ -33,47 +44,19 @@ func main() {
 			}
 			fmt.Printf("\n")
 		case "type":
-			if len(args) == 0 {
-				continue
-			}
-
 			type_check := args[0]
-
-			builtins := map[string]bool{"echo": true, "exit": true, "type": true}
-			if builtins[type_check] {
-				fmt.Printf("%s is a shell builtin\n", type_check)
-				continue
+			if type_check == "echo" || type_check == "exit" || type_check == "type" {
+				fmt.Printf("%v is a shell builtin\n", type_check)
 			}
-
 			// check it in PATH
 			// 1.Go through every directory in PATH. For each directory
 			// 2. check if a file with the command name exists
 			// 3. check if the file has execute permissions
 			// 4. if the file exists and has execute permissions, print <command> is <full_path> and stop.
 			// 5. If the file exists but lacks execute permissions, skip it and continue to the next directory.
-			pathEnv := os.Getenv("PATH")
-			paths := strings.Split(pathEnv, string(os.PathListSeparator))
-			found := false
+			getExecutablePath() 
 
-			for _, dir := range paths {
-				fullPath := filepath.Join(dir, type_check)
-
-				//check if file exists and if we can access it
-				info, err := os.Stat(fullPath)
-				if err != nil {
-					continue // file doesnt exist condn
-				}
-
-				//check if its is a regular file and has executbale permissions
-				// 0111 repr the executable bit
-				if !info.IsDir() && info.Mode()&0111 != 0 {
-					fmt.Printf("%s is %s\n", args[0], fullPath)
-					found = true
-					break
-				}
-			}
-
-			if !found {
+			else {
 				fmt.Printf("%v: not found\n", type_check)
 			}
 
