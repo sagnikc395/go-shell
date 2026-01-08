@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -37,11 +38,11 @@ func main() {
 				continue
 			}
 
-			type_check := args[0]
+			typeCheck := args[0]
 
 			builtins := map[string]bool{"echo": true, "exit": true, "type": true}
-			if builtins[type_check] {
-				fmt.Printf("%s is a shell builtin\n", type_check)
+			if builtins[typeCheck] {
+				fmt.Printf("%s is a shell builtin\n", typeCheck)
 				continue
 			}
 
@@ -56,17 +57,17 @@ func main() {
 			found := false
 
 			for _, dir := range paths {
-				fullPath := filepath.Join(dir, type_check)
+				fullPath := filepath.Join(dir, typeCheck)
 
-				//check if file exists and if we can access it
+				// check if file exists and if we can access it
 				info, err := os.Stat(fullPath)
 				if err != nil {
 					continue // file doesnt exist condn
 				}
 
-				//check if its is a regular file and has executbale permissions
+				// check if its is a regular file and has executbale permissions
 				// 0111 repr the executable bit
-				if !info.IsDir() && info.Mode()&0111 != 0 {
+				if !info.IsDir() && info.Mode()&0o111 != 0 {
 					fmt.Printf("%s is %s\n", args[0], fullPath)
 					found = true
 					break
@@ -74,11 +75,33 @@ func main() {
 			}
 
 			if !found {
-				fmt.Printf("%v: not found\n", type_check)
+				fmt.Printf("%v: not found\n", typeCheck)
 			}
 
 		default:
-			fmt.Printf(cmd + ": command not found\n")
+			// search for an executable with the given name in the directories listed in PATH
+			// if found, execute the program
+			// pass any arguments from the cli to the program
+
+			// prepare the external program
+			// cmd is the executable ame, args is the slice of arguments
+			externalCmd := exec.Command(cmd, args...)
+
+			externalCmd.Stdout = os.Stdout
+			externalCmd.Stderr = os.Stderr
+			externalCmd.Stdin = os.Stdin
+
+			// running the command and checking for errors
+			err := externalCmd.Run()
+			if err != nil {
+				// if error is "executable file not found", print the command not found stmt
+				if _, ok := err.(*exec.Error); ok {
+					fmt.Printf("%s: command not found\n", cmd)
+				} else {
+					fmt.Printf("%s: %v\n", cmd, err)
+				}
+			}
+
 		}
 
 	}
