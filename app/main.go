@@ -33,6 +33,14 @@ func main() {
 				fmt.Printf("%v ", v)
 			}
 			fmt.Printf("\n")
+		case "pwd":
+			dir, err := os.Getwd()
+			if err != nil {
+				fmt.Printf("error: %v\n", err)
+			} else {
+				fmt.Printf("%s\n", dir)
+			}
+
 		case "type":
 			if len(args) == 0 {
 				continue
@@ -40,7 +48,7 @@ func main() {
 
 			typeCheck := args[0]
 
-			builtins := map[string]bool{"echo": true, "exit": true, "type": true}
+			builtins := map[string]bool{"echo": true, "exit": true, "type": true, "pwd": true}
 			if builtins[typeCheck] {
 				fmt.Printf("%s is a shell builtin\n", typeCheck)
 				continue
